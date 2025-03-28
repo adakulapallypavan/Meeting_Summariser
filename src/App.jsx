@@ -28,7 +28,7 @@ function App() {
           </Routes>
         </div>
         
-        {/* Footer spans full width */}
+        {/* Footer spanstfsug full width */}
         <Footer />
       </div>
     </Router>
