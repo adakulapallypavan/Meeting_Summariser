@@ -199,7 +199,7 @@ function ProcessingStatus({ isProcessing, status, progress }) {
   if (!status) return null;
 
   return (
-    <div className={`glass-effect rounded-lg p-4 ${isProcessing ? 'border-blue-500/30' : ''}`}>
+    <div className={`glass-effect rounded-lg p-4 overflow-hidden relative z-0 ${isProcessing ? 'border-blue-500/30' : ''}`}>
       <div className="flex items-start gap-2">
         <div className="mt-1">{getStatusIcon()}</div>
         <div className="text-white-700 flex-1">{formatStatusMessage()}</div>

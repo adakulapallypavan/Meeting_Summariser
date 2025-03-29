@@ -63,29 +63,46 @@ const TextUpload = ({
       </button>
 
       {/* Uploaded file preview */}
-{uploadedFile && (
-  <div className="mt-4">
-    <div className={`flex items-center justify-between bg-gray-50 p-3 rounded-lg ${isProcessing ? 'file-selected-pulse border border-blue-300' : 'border border-gray-200'}`}>
-      <div className="flex items-center">
-        <div className={`${isProcessing ? 'bg-blue-100' : 'bg-gray-100'} p-2 rounded-full mr-3`}>
-          <Upload className={`${isProcessing ? 'text-blue-500' : 'text-gray-500'} w-4 h-4`} />
+      {uploadedFile && (
+        <div className="mt-4">
+          <div className="bg-white border border-gray-300 rounded-lg p-5 flex flex-col shadow-sm hover:shadow-md transition-shadow">
+            {/* File info and remove button */}
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center flex-1 min-w-0">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg mr-3 shadow-sm">
+                  <Upload className="text-white w-5 h-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-gray-800 font-medium truncate max-w-[240px]">{uploadedFile.name}</p>
+                  <p className="text-gray-500 text-sm">{formatFileSize(uploadedFile.size)}</p>
+                  {isProcessing && <p className="text-xs text-blue-500 mt-1">Processing...</p>}
+                </div>
+              </div>
+              <button
+                onClick={removeFile}
+                disabled={isProcessing}
+                className="p-2 hover:bg-gray-50 rounded-full transition text-gray-400 hover:text-gray-600"
+                aria-label="Remove file"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="text-left">
-          <p className="text-sm font-medium text-gray-800">{uploadedFile.name}</p>
-          <p className="text-xs text-gray-500">{formatFileSize(uploadedFile.size)}</p>
-          {isProcessing && <p className="text-xs text-blue-500 mt-1">Processing...</p>}
-        </div>
-      </div>
-      <button 
-        className="text-red-500 hover:text-red-700 text-sm"
-        onClick={removeFile}
-        disabled={isProcessing}
-      >
-        {isProcessing ? 'Processing...' : 'Remove'}
-      </button>
-    </div>
-  </div>
-)}
+      )}
     </div>
   );
 };

@@ -25,7 +25,6 @@ function Home() {
   const [processingStatus, setProcessingStatus] = useState('');
   const [processingProgress, setProcessingProgress] = useState(0);
   const [showSummary, setShowSummary] = useState(false);
-  const [viewMode, setViewMode] = useState('meeting');
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState(null);
   const [language, setLanguage] = useState('auto');
@@ -90,6 +89,8 @@ function Home() {
     setIsProcessing(false);
     setProcessingStatus('');
     setProcessingProgress(0);
+    // Reset language to auto when changing input methods
+    setLanguage('auto');
     
     if (pollingIntervalRef.current) {
       clearInterval(pollingIntervalRef.current);
@@ -814,7 +815,7 @@ function Home() {
               language={language}
               setLanguage={setLanguage}
               supportedLanguages={supportedLanguages}
-                    isLoadingLanguages={isLoadingLanguages}
+              isLoadingLanguages={isLoadingLanguages}
             />
             {uploadedFile && (
               <div className="mt-6 space-y-4">
@@ -827,17 +828,6 @@ function Home() {
                       confidence_metrics: summary?.confidence_metrics
                     }} 
                   />
-                )}
-                
-                {/* Processing status below transcript preview */}
-                {isProcessing && (
-                  <div className="bg-white rounded-lg">
-                    <ProcessingStatus 
-                      isProcessing={isProcessing}
-                      status={processingStatus}
-                      progress={processingProgress}
-                    />
-                  </div>
                 )}
                 
                 {/* Only show generate button if not processing and summary is not shown yet */}
@@ -1019,77 +1009,13 @@ function Home() {
 
       {/* Summary View */}
       {showSummary && summary && (
-              <>
-        <SummaryView 
-          viewMode={viewMode} 
-          setViewMode={setViewMode} 
-          summary={summary} 
-        />
+  <>
+    <SummaryView 
+      summary={summary} 
+      isEditable={true}
+    />
                 
-                {/* Download Buttons */}
-                <div className="flex gap-3 mb-8">
-                  <button 
-                    className="bg-white text-blue-600 border border-blue-600 font-medium py-2 px-4 rounded-lg hover:bg-blue-50"
-                    onClick={() => {
-                      // Create a Blob with the JSON data
-                      const jsonBlob = new Blob([JSON.stringify(summary.transcript || {}, null, 2)], { type: 'application/json' });
-                      
-                      // Create a download link
-                      const url = URL.createObjectURL(jsonBlob);
-                      const a = document.createElement('a');
-                      a.href = url;
-                      a.download = 'meeting_summary.json';
-                      
-                      // Trigger download
-                      document.body.appendChild(a);
-                      a.click();
-                      
-                      // Clean up
-                      setTimeout(() => {
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                      }, 0);
-                    }}
-                  >
-                    Download Summary (JSON)
-                  </button>
-                  
-                  <button
-                    className="bg-white text-gray-600 border border-gray-300 font-medium py-2 px-4 rounded-lg hover:bg-gray-50"
-                    onClick={() => {
-                      // Create a Blob with the text data
-                      let transcriptText = "";
-                      
-                      if (summary.transcript && summary.transcript.formatted_transcript) {
-                        transcriptText = Array.isArray(summary.transcript.formatted_transcript) 
-                          ? summary.transcript.formatted_transcript.join('\n')
-                          : summary.transcript.formatted_transcript;
-                      } else if (transcript) {
-                        transcriptText = transcript;
-                      }
-                      
-                      const textBlob = new Blob([transcriptText], { type: 'text/plain' });
-                      
-                      // Create a download link
-                      const url = URL.createObjectURL(textBlob);
-                      const a = document.createElement('a');
-                      a.href = url;
-                      a.download = 'meeting_transcript.txt';
-                      
-                      // Trigger download
-                      document.body.appendChild(a);
-                      a.click();
-                      
-                      // Clean up
-                      setTimeout(() => {
-                        document.body.removeChild(a);
-                        URL.revokeObjectURL(url);
-                      }, 0);
-                    }}
-                  >
-                    Download Transcript (TXT)
-                  </button>
-                </div>
+               
               </>
       )}
     </div>
