@@ -12,7 +12,7 @@ const Navbar = () => {
 </h1> */}
         <div className="flex items-center gap-4">
           <a href="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors">Help</a>
-          <a href="#" className="btn-primary text-sm py-2">Sign Up</a>
+          {/* <a href="#" className="btn-primary text-sm py-2">Sign Up</a> */}
         </div>
       </div>
     </header>

@@ -216,11 +216,11 @@ function SummaryView({ viewMode, setViewMode, summary }) {
             
             {/* Enhanced confidence metrics display */}
             {confidenceMetrics && (
-              <div className="mt-6">
+              <div className="mt-6 relative">
                 <h5 className="text-md font-medium mb-2 text-gray-700">Transcription Quality Analysis</h5>
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-sm border border-blue-100 p-4 overflow-hidden relative">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-sm border border-blue-100 p-4 overflow-hidden relative z-0">
                   {/* Glass-effect overlay */}
-                  <div className="absolute inset-0 backdrop-blur-sm bg-white/30 z-0"></div>
+                  <div className="absolute inset-0 backdrop-blur-sm bg-white/30"></div>
                   
                   {/* Header with confidence score badge */}
                   <div className="flex justify-between items-center mb-3 relative z-10">
@@ -248,54 +248,32 @@ function SummaryView({ viewMode, setViewMode, summary }) {
                       <span>High</span>
                     </div>
                     
-                    <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden p-0.5">
+                    <div className="w-full h-5 bg-gray-200 rounded-full overflow-hidden relative">
                       {/* Three-section background */}
-                      <div className="absolute inset-y-0 left-0 w-full flex h-3">
+                      <div className="absolute inset-y-0 left-0 w-full flex h-5">
                         <div className="bg-red-200 h-full w-[30%]"></div>
                         <div className="bg-yellow-200 h-full w-[20%]"></div>
                         <div className="bg-green-200 h-full w-[50%]"></div>
                       </div>
                       
-                      {/* Confidence indicator */}
-                      <div className="relative">
+                      {/* Confidence indicator with percentage directly on the bar */}
+                      <div className="relative h-full">
                         <div 
-                          className={`h-2 rounded-full ${
+                          className={`h-full rounded-full flex items-center justify-end pr-2 ${
                             confidenceMetrics.average >= 90 ? 'bg-gradient-to-r from-green-400 to-green-600' :
                             confidenceMetrics.average >= 70 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' : 
                             'bg-gradient-to-r from-red-400 to-red-600'
                           }`}
                           style={{ width: `${confidenceMetrics.average}%` }}
-                        ></div>
+                        >
+                          <span className="text-white text-xs font-bold drop-shadow-md">{confidenceMetrics.average}%</span>
+                        </div>
                       </div>
-                      
-                      {/* Tooltip markers */}
-                      <div 
-                        className="absolute h-4 w-1 bg-gray-600 rounded-full top-1/2 transform -translate-y-1/2"
-                        style={{ left: `${confidenceMetrics.min}%` }}
-                        title={`Minimum: ${confidenceMetrics.min}%`}
-                      ></div>
-                      <div 
-                        className="absolute h-4 w-1 bg-gray-800 rounded-full top-1/2 transform -translate-y-1/2"
-                        style={{ left: `${confidenceMetrics.max}%` }}
-                        title={`Maximum: ${confidenceMetrics.max}%`}
-                      ></div>
                     </div>
                   </div>
                   
-                  {/* Warning for low confidence if needed */}
-                  {confidenceMetrics.low_confidence_percentage > 10 && (
-                    <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm flex items-start relative z-10">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                      </svg>
-                      <span>
-                        <strong>{confidenceMetrics.low_confidence_percentage}%</strong> of segments have low confidence. The transcript may contain errors in these sections.
-                      </span>
-                    </div>
-                  )}
-                  
-                  {/* Enhanced stats grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 relative z-10">
+                  {/* Updated stats grid with only Average and Range */}
+                  <div className="grid grid-cols-2 gap-2 mt-3 relative z-10">
                     <div className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
                       <div className="text-xs text-gray-500">Average</div>
                       <div className="font-bold text-gray-800">{confidenceMetrics.average}%</div>
@@ -303,30 +281,6 @@ function SummaryView({ viewMode, setViewMode, summary }) {
                     <div className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
                       <div className="text-xs text-gray-500">Range</div>
                       <div className="font-bold text-gray-800">{confidenceMetrics.min}-{confidenceMetrics.max}%</div>
-                    </div>
-                    <div className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
-                      <div className="text-xs text-gray-500">Total Segments</div>
-                      <div className="font-bold text-gray-800">{confidenceMetrics.total_segments || '-'}</div>
-                    </div>
-                    <div className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
-                      <div className="text-xs text-gray-500">Low Confidence</div>
-                      <div className="font-bold text-gray-800">{confidenceMetrics.low_confidence_count || '-'}</div>
-                    </div>
-                  </div>
-                  
-                  {/* Legend */}
-                  <div className="flex justify-center gap-4 text-xs text-gray-600 mt-3 relative z-10">
-                    <div className="flex items-center">
-                      <span className="inline-block w-3 h-3 bg-green-500 rounded-sm mr-1"></span>
-                      <span>High (90%+)</span>
-                    </div>
-                    <div className="flex items-center">
-                      <span className="inline-block w-3 h-3 bg-yellow-500 rounded-sm mr-1"></span>
-                      <span>Medium (70-89%)</span>
-                    </div>
-                    <div className="flex items-center">
-                      <span className="inline-block w-3 h-3 bg-red-500 rounded-sm mr-1"></span>
-                      <span>Low (&lt;70%)</span>
                     </div>
                   </div>
                 </div>

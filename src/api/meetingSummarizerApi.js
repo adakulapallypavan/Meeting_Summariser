@@ -100,7 +100,7 @@ const meetingSummarizerApi = {
   },
   
   // Generate summary
-  generateSummary: async function(transcript, participants, language = null, isLongRecording = false) {
+  generateSummary: async function(transcript, participants, language = null, isLongRecording = false, additionalContext = '') {
     // Format participants correctly - ensure it's an array
     const formattedParticipants = Array.isArray(participants) 
       ? participants 
@@ -111,7 +111,8 @@ const meetingSummarizerApi = {
       transcript,
       participants: formattedParticipants,
       language: language === 'auto' ? null : language, // Don't send 'auto' to backend
-      is_long_recording: isLongRecording
+      is_long_recording: isLongRecording,
+      additional_context: additionalContext
     };
     
     try {

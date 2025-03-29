@@ -73,11 +73,11 @@ function TranscriptPreview({ transcript }) {
       </div>
       
       {transcript.confidence_metrics && (
-        <div className="mt-4 confidence-metrics">
+        <div className="mt-4 confidence-metrics relative">
           {/* Elegant confidence visualization box */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-sm border border-blue-100 p-4 overflow-hidden relative">
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl shadow-sm border border-blue-100 p-4 overflow-hidden relative z-0">
             {/* Glass-effect overlay */}
-            <div className="absolute inset-0 backdrop-blur-sm bg-white/30 z-0"></div>
+            <div className="absolute inset-0 backdrop-blur-sm bg-white/30"></div>
             
             {/* Header with confidence score badge */}
             <div className="flex justify-between items-center mb-3 relative z-10">
@@ -105,54 +105,34 @@ function TranscriptPreview({ transcript }) {
                 <span>High</span>
               </div>
               
-              <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden p-0.5">
+              <div className="w-full h-5 bg-gray-200 rounded-full overflow-hidden relative">
                 {/* Three-section background */}
-                <div className="absolute inset-y-0 left-0 w-full flex h-3">
+                <div className="absolute inset-y-0 left-0 w-full flex h-5">
                   <div className="bg-red-200 h-full w-[30%]"></div>
                   <div className="bg-yellow-200 h-full w-[20%]"></div>
                   <div className="bg-green-200 h-full w-[50%]"></div>
                 </div>
                 
-                {/* Confidence indicator */}
-                <div className="relative">
+                {/* Confidence indicator with percentage directly on the bar */}
+                <div className="relative h-full">
                   <div 
-                    className={`h-2 rounded-full ${
+                    className={`h-full rounded-full flex items-center justify-end pr-2 ${
                       transcript.confidence_metrics.average >= 90 ? 'bg-gradient-to-r from-green-400 to-green-600' :
                       transcript.confidence_metrics.average >= 70 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' : 
                       'bg-gradient-to-r from-red-400 to-red-600'
                     }`}
                     style={{ width: `${transcript.confidence_metrics.average}%` }}
-                  ></div>
+                  >
+                    <span className="text-white text-xs font-bold drop-shadow-md">{transcript.confidence_metrics.average}%</span>
+                  </div>
                 </div>
                 
-                {/* Tooltip markers */}
-                <div 
-                  className="absolute h-4 w-1 bg-gray-600 rounded-full top-1/2 transform -translate-y-1/2"
-                  style={{ left: `${transcript.confidence_metrics.min}%` }}
-                  title={`Minimum: ${transcript.confidence_metrics.min}%`}
-                ></div>
-                <div 
-                  className="absolute h-4 w-1 bg-gray-800 rounded-full top-1/2 transform -translate-y-1/2"
-                  style={{ left: `${transcript.confidence_metrics.max}%` }}
-                  title={`Maximum: ${transcript.confidence_metrics.max}%`}
-                ></div>
+                {/* Remove tooltip markers */}
               </div>
             </div>
             
-            {/* Warning for low confidence if needed */}
-            {transcript.confidence_metrics.low_confidence_percentage > 10 && (
-              <div className="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm flex items-start relative z-10">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <span>
-                  <strong>{transcript.confidence_metrics.low_confidence_percentage}%</strong> of segments have low confidence. The transcript may contain errors in these sections.
-                </span>
-              </div>
-            )}
-            
             {/* Enhanced stats grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3 relative z-10">
+            <div className="grid grid-cols-2 gap-2 mt-3 relative z-10">
               <div className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
                 <div className="text-xs text-gray-500">Average</div>
                 <div className="font-bold text-gray-800">{transcript.confidence_metrics.average}%</div>
@@ -160,14 +140,6 @@ function TranscriptPreview({ transcript }) {
               <div className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
                 <div className="text-xs text-gray-500">Range</div>
                 <div className="font-bold text-gray-800">{transcript.confidence_metrics.min}-{transcript.confidence_metrics.max}%</div>
-              </div>
-              <div className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
-                <div className="text-xs text-gray-500">Total Segments</div>
-                <div className="font-bold text-gray-800">{transcript.confidence_metrics.total_segments || '-'}</div>
-              </div>
-              <div className="bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
-                <div className="text-xs text-gray-500">Low Confidence</div>
-                <div className="font-bold text-gray-800">{transcript.confidence_metrics.low_confidence_count || '-'}</div>
               </div>
             </div>
             

@@ -6,6 +6,7 @@ import AudioUpload from '../components/AudioUpload/AudioUpload';
 import TextInput from '../components/TextInput/TextInput';
 import TextUpload from '../components/TextUpload/TextUpload';
 import ParticipantsInput from '../components/ParticipantsInput/ParticipantsInput';
+import AdditionalContextInput from '../components/AdditionalContextInput/AdditionalContextInput';
 import SummaryView from '../components/Summary/SummaryView';
 import ProcessingStatus from '../components/ProcessingStatus/ProcessingStatus';
 import TranscriptPreview from '../components/TranscriptPreview/TranscriptPreview';
@@ -17,6 +18,7 @@ function Home() {
   const [inputMethod, setInputMethod] = useState('audio');
   const [isLongRecording, setIsLongRecording] = useState(false);
   const [participants, setParticipants] = useState('');
+  const [additionalContext, setAdditionalContext] = useState('');
   const [transcript, setTranscript] = useState('');
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -82,6 +84,7 @@ function Home() {
     setUploadedFile(null);
     setTranscript('');
     setParticipants('');
+    setAdditionalContext('');
     setShowSummary(false);
     setError(null);
     setIsProcessing(false);
@@ -576,6 +579,9 @@ function Home() {
 
   const handleGenerateSummary = async () => {
     try {
+      console.log('========== GENERATING SUMMARY ==========');
+      console.log('Additional context:', additionalContext);
+      
       setIsProcessing(true);
       setShowSummary(false);
       setSummary(null);
@@ -605,31 +611,55 @@ function Home() {
               setProcessingStatus(`Generating summary with ${extractedParticipants.length} participants...`);
               setProcessingProgress(20);
               
-          response = await meetingSummarizerApi.generateSummary(
-            transcript,
+              // Store additionalContext in a variable before sending
+              const contextToSend = additionalContext.trim();
+              
+              console.log('Data being sent to backend for summary generation:', {
+                transcript,
+                participants: extractedParticipants,
+                language,
+                isLongRecording,
+                additionalContext: contextToSend,
+              });
+            
+              response = await meetingSummarizerApi.generateSummary(
+                transcript,
                 extractedParticipants,
-            language,
-            isLongRecording
-          );
-        } else {
+                language,
+                isLongRecording,
+                contextToSend
+              );
+            } else {
               throw new Error('Could not identify participants. Please enter participants manually.');
             }
           } catch (error) {
             console.error('Participant extraction error:', error);
-          throw new Error('Could not identify participants. Please enter participants manually.');
-        }
+            throw new Error('Could not identify participants. Please enter participants manually.');
+          }
         } else {
           // Use provided participants
           setProcessingStatus(`Generating summary with ${participantsList.length} participants: ${participantsList.join(', ')}`);
           setProcessingProgress(20);
         
-        response = await meetingSummarizerApi.generateSummary(
-          transcript,
-          participantsList,
-          language,
-          isLongRecording
-        );
-      }
+          // Store additionalContext in a variable before sending
+          const contextToSend = additionalContext.trim();
+          
+          console.log('Data being sent to backend for summary generation:', {
+            transcript,
+            participants: participantsList,
+            language,
+            isLongRecording,
+            additionalContext: contextToSend,
+          });
+
+          response = await meetingSummarizerApi.generateSummary(
+            transcript,
+            participantsList,
+            language,
+            isLongRecording,
+            contextToSend
+          );
+        }
       } else {
         throw new Error('No transcript available. Please upload audio or enter text first.');
       }
@@ -801,21 +831,30 @@ function Home() {
                 
                 {/* Processing status below transcript preview */}
                 {isProcessing && (
-                  <ProcessingStatus 
-                    isProcessing={isProcessing}
-                    status={processingStatus}
-                    progress={processingProgress}
-                  />
+                  <div className="bg-white rounded-lg">
+                    <ProcessingStatus 
+                      isProcessing={isProcessing}
+                      status={processingStatus}
+                      progress={processingProgress}
+                    />
+                  </div>
                 )}
                 
                 {/* Only show generate button if not processing and summary is not shown yet */}
                 {transcript && !isProcessing && !showSummary && (
-                  <button 
-                    className="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 w-full"
-                    onClick={handleGenerateSummary}
-                  >
-                    Generate Summary
-                  </button>
+                  <>
+                    <AdditionalContextInput
+                      additionalContext={additionalContext}
+                      setAdditionalContext={setAdditionalContext}
+                    />
+                    
+                    <button 
+                      className="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 w-full"
+                      onClick={handleGenerateSummary}
+                    >
+                      Generate Summary
+                    </button>
+                  </>
                 )}
               </div>
             )}
@@ -842,11 +881,14 @@ function Home() {
                         setParticipants={setParticipants}
                       />
                       
-                      <ProcessingStatus 
-                        isProcessing={isProcessing}
-                        status={processingStatus}
-                        progress={processingProgress}
-                      />
+                      {/* Keep ProcessingStatus inside a container */}
+                      <div className="bg-white rounded-lg">
+                        <ProcessingStatus 
+                          isProcessing={isProcessing}
+                          status={processingStatus}
+                          progress={processingProgress}
+                        />
+                      </div>
                       
                       {transcript && (
                         <>
@@ -859,25 +901,21 @@ function Home() {
                             }} 
                           />
                           
-                          {/* Processing status below the transcript preview */}
-                          {isProcessing && (
-                            <div className="mt-4">
-                              <ProcessingStatus 
-                                isProcessing={isProcessing}
-                                status={processingStatus}
-                                progress={processingProgress}
-                              />
-                            </div>
-                          )}
-                          
                           {/* Only show generate button if not processing and summary not shown yet */}
                           {!isProcessing && !showSummary && (
-                            <button 
-                              className="mt-4 bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 w-full"
-                              onClick={handleGenerateSummary}
-                            >
-                              Generate Summary
-                            </button>
+                            <>
+                              <AdditionalContextInput
+                                additionalContext={additionalContext}
+                                setAdditionalContext={setAdditionalContext}
+                              />
+                              
+                              <button 
+                                className="mt-4 bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 w-full"
+                                onClick={handleGenerateSummary}
+                              >
+                                Generate Summary
+                              </button>
+                            </>
                           )}
                         </>
                       )}
@@ -935,13 +973,14 @@ function Home() {
                         setParticipants={setParticipants}
                       />
 
-                {isProcessing && (
+                {/* Keep ProcessingStatus inside a container */}
+                <div className="bg-white rounded-lg">
                   <ProcessingStatus 
                     isProcessing={isProcessing}
                     status={processingStatus}
                     progress={processingProgress}
                   />
-                )}
+                </div>
                 
                 {transcript && (
                   <>
@@ -954,25 +993,21 @@ function Home() {
                       }} 
                     />
                     
-                    {/* Processing status below the transcript preview */}
-                    {isProcessing && (
-                      <div className="mt-4">
-                        <ProcessingStatus 
-                          isProcessing={isProcessing}
-                          status={processingStatus}
-                          progress={processingProgress}
-                        />
-                      </div>
-                    )}
-                    
                     {/* Only show generate button if not processing and summary not shown yet */}
                     {!isProcessing && !showSummary && (
-                      <button 
-                        className="mt-4 bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 w-full"
-                        onClick={handleGenerateSummary}
-                      >
-                        Generate Summary
-                      </button>
+                      <>
+                        <AdditionalContextInput
+                          additionalContext={additionalContext}
+                          setAdditionalContext={setAdditionalContext}
+                        />
+                        
+                        <button 
+                          className="mt-4 bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 w-full"
+                          onClick={handleGenerateSummary}
+                        >
+                          Generate Summary
+                        </button>
+                      </>
                     )}
                   </>
                 )}
