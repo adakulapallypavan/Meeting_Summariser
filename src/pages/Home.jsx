@@ -772,17 +772,18 @@ function Home() {
   }, [summary]);
 
   return (
-    <main className="flex min-h-[calc(100vh-4rem)] mt-0">
-      
+<main className="flex min-h-[calc(100vh-4rem)] mt-0">      
       {/* Sidebar - fixed width, scrollable */}
-        <div className="w-80 min-w-64 bg-gray-50">
-          <TipsSection />
-        </div>
+      <div className="w-80 min-w-64 bg-gray-50 flex justify-center">
+    <div className="w-full max-w-xs py-6">
+      <TipsSection />
+    </div>
+  </div>
         
         {/* Main content area */}
-      <div className="flex-1 overflow-auto">
-  <div className="px-4 md:px-8 lg:px-12 py-4">
-    <div className="max-w-4xl mx-auto">
+        <div className="flex-1 overflow-auto">
+    <div className="px-4 md:px-8 lg:px-12 py-4">
+      <div className="max-w-4xl mx-auto">
 
       {/* Input Method Selector */}
       <InputMethodSelector 
