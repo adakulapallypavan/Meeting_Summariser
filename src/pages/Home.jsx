@@ -126,6 +126,13 @@ function Home() {
         progress: status.progress || 0
       });
       
+       // If status.progress is missing or always 0, implement a simple increment
+    if (status.status === 'processing' && (!status.progress || status.progress === 0)) {
+      setProcessingProgress(prev => Math.min(prev + 2, 95)); // Increment by 2% up to 95%
+    } else {
+      setProcessingProgress(status.progress || 0);
+    }
+    
       setProcessingProgress(status.progress || 0);
       setProcessingStatus(status.message || 'Processing...');
       

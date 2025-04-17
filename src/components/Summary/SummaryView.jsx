@@ -216,7 +216,7 @@ function SummaryView({ summary, isEditable = true }) {
               }`}
               onClick={toggleEditMode}
             >
-              {/* {editMode ? (
+              {editMode ? (
                 <>
                   <Save size={16} /> Save
                 </>
@@ -224,7 +224,7 @@ function SummaryView({ summary, isEditable = true }) {
                 <>
                   <Edit2 size={16} /> Edit
                 </>
-              )} */}
+              )}
             </button>
           )}
           <button 
